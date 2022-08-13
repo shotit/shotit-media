@@ -1,9 +1,32 @@
 import path from "path";
-import fs from "fs-extra";
+import { S3Client, HeadObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import crypto from "crypto";
 import child_process from "child_process";
 
-const { VIDEO_PATH = "/mnt/", TRACE_MEDIA_SALT } = process.env;
+const {
+  AWS_ENDPOINT_URL,
+  AWS_ACCESS_KEY,
+  AWS_SECRET_KEY,
+  AWS_BUCKET,
+  VIDEO_PATH = "/mnt/",
+  TRACE_MEDIA_SALT,
+} = process.env;
+
+const opts = AWS_ENDPOINT_URL
+  ? {
+      endpoint: AWS_ENDPOINT_URL,
+      signatureVersion: "v4",
+      credentials: {
+        accessKeyId: AWS_ACCESS_KEY,
+        secretAccessKey: AWS_SECRET_KEY,
+      },
+    }
+  : {};
+
+const s3 = new S3Client(opts);
+
+let command;
 
 const generateImagePreview = (filePath, t, size = "m") => {
   const ffmpeg = child_process.spawnSync("ffmpeg", [
@@ -67,15 +90,26 @@ export default async (req, res) => {
   if (!videoFilePath.startsWith(VIDEO_PATH)) {
     return res.status(403).send("Forbidden");
   }
-  if (!fs.existsSync(videoFilePath)) {
-    return res.status(404).send("Not found");
+
+  const params = {
+    Bucket: AWS_BUCKET,
+    Key: `${req.params.anilistID}/${req.params.filename.replace(/\.jpg$/, "")}`,
+  };
+  try {
+    command = new HeadObjectCommand(params);
+    await s3.send(command);
+  } catch (error) {
+    res.status(404).send("Not found");
+    return;
   }
   const size = req.query.size || "m";
   if (!["l", "m", "s"].includes(size)) {
     return res.status(400).send("Bad Request. Invalid param: size");
   }
   try {
-    const image = generateImagePreview(videoFilePath, t, size);
+    command = new GetObjectCommand(params);
+    const signedUrl = await getSignedUrl(s3, command, { expiresIn: 60 * 5 });
+    const image = generateImagePreview(signedUrl, t, size);
     res.set("Content-Type", "image/jpg");
     res.send(image);
   } catch (e) {

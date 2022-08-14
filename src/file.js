@@ -34,7 +34,7 @@ const s3 = new S3Client(opts);
 let command;
 
 function error500(e, res) {
-  console.log(JSON.stringify(e, null, 2));
+  console.log(e);
   res.status(500).send("Internal Server Error");
 }
 

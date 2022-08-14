@@ -1,5 +1,6 @@
 import path from "path";
 import fetch from "node-fetch";
+import stream from "stream";
 import {
   S3Client,
   HeadObjectCommand,
@@ -72,7 +73,8 @@ export default async (req, res) => {
     response.body.pipe(res);
   } else if (req.method === "PUT") {
     console.log(`Uploading ${videoFilePath}`);
-    const objectUploadParams = Object.assign(params, { Body: req });
+    const passThroughStream = new stream.PassThrough();
+    const objectUploadParams = Object.assign(params, { Body: passThroughStream });
     try {
       const parallelUploads3 = new Upload({
         client: s3,
@@ -81,6 +83,8 @@ export default async (req, res) => {
         leavePartsOnError: false, // optional manually handle dropped parts
         params: objectUploadParams,
       });
+
+      req.pipe(passThroughStream);
 
       parallelUploads3.on("httpUploadProgress", (progress) => {
         console.log(progress);

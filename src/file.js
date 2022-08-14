@@ -56,6 +56,7 @@ export default async (req, res) => {
       command = new HeadObjectCommand(params);
       await s3.send(command);
     } catch (error) {
+      console.log(error);
       res.status(404).send(`Not found`);
       return;
     }

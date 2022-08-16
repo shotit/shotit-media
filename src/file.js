@@ -15,13 +15,14 @@ const {
   AWS_ACCESS_KEY,
   AWS_SECRET_KEY,
   AWS_BUCKET,
+  AWS_REGION,
   VIDEO_PATH = "/mnt",
 } = process.env;
 
 const opts = AWS_ENDPOINT_URL
   ? {
       endpoint: AWS_ENDPOINT_URL,
-      signatureVersion: "v4",
+      region: AWS_REGION,
       credentials: {
         accessKeyId: AWS_ACCESS_KEY,
         secretAccessKey: AWS_SECRET_KEY,

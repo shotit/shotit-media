@@ -26,7 +26,7 @@ app.set("trust proxy", 1);
 
 app.use((req, res, next) => {
   const startTime = performance.now();
-  console.log("=>", new Date().toISOString(), req.ip, req.path);
+  console.log(req.method, "=>", new Date().toISOString(), req.ip, req.path);
   res.on("finish", () => {
     console.log(
       "<=",

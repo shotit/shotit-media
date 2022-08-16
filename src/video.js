@@ -1,11 +1,35 @@
 import path from "path";
-import fs from "fs-extra";
+import { S3Client, HeadObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import crypto from "crypto";
 import child_process from "child_process";
 
 import detectScene from "./lib/detect-scene.js";
 
-const { VIDEO_PATH = "/mnt/", TRACE_MEDIA_SALT } = process.env;
+const {
+  AWS_ENDPOINT_URL,
+  AWS_ACCESS_KEY,
+  AWS_SECRET_KEY,
+  AWS_BUCKET,
+  AWS_REGION,
+  VIDEO_PATH = "/mnt/",
+  TRACE_MEDIA_SALT,
+} = process.env;
+
+const opts = AWS_ENDPOINT_URL
+  ? {
+      endpoint: AWS_ENDPOINT_URL,
+      region: AWS_REGION,
+      credentials: {
+        accessKeyId: AWS_ACCESS_KEY,
+        secretAccessKey: AWS_SECRET_KEY,
+      },
+    }
+  : {};
+
+const s3 = new S3Client(opts);
+
+let command;
 
 const generateVideoPreview = (filePath, start, end, size = "m", mute = false) => {
   const ffmpeg = child_process.spawnSync(
@@ -96,8 +120,17 @@ export default async (req, res) => {
   if (!videoFilePath.startsWith(VIDEO_PATH)) {
     return res.status(403).send("Forbidden");
   }
-  if (!fs.existsSync(videoFilePath)) {
-    return res.status(404).send("Not found");
+
+  const params = {
+    Bucket: AWS_BUCKET,
+    Key: `${req.params.anilistID}/${req.params.filename}`,
+  };
+  try {
+    command = new HeadObjectCommand(params);
+    await s3.send(command);
+  } catch (error) {
+    res.status(404).send("Not found");
+    return;
   }
   const size = req.query.size || "m";
   if (!["l", "m", "s"].includes(size)) {
@@ -105,12 +138,14 @@ export default async (req, res) => {
   }
   const minDuration = Number(req.query.minDuration) || 0.25;
   try {
-    const scene = await detectScene(videoFilePath, t, minDuration > 2 ? 2 : minDuration);
+    command = new GetObjectCommand(params);
+    const signedUrl = await getSignedUrl(s3, command, { expiresIn: 60 * 5 });
+    const scene = await detectScene(signedUrl, t, minDuration > 2 ? 2 : minDuration);
     if (scene === null) {
       return res.status(500).send("Internal Server Error");
     }
     const video = generateVideoPreview(
-      videoFilePath,
+      signedUrl,
       scene.start,
       scene.end,
       size,

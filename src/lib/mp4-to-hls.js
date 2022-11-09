@@ -14,13 +14,14 @@ import child_process from "child_process";
  * ffmpeg -i index.ts -c copy -map 0 -f segment -segment_list index.m3u8 -segment_time 10 10s_%3d.ts
  *
  * @param {String} filePath
+ * @param {String} tempDir
  * @returns {String | null}
  */
-export default (filePath) => {
+export default (filePath, tempDir = "") => {
   const anilistID = filePath.split(path.sep).slice(-2)[0];
   const fileName = filePath.split(path.sep).slice(-2)[1];
 
-  const tempPath = path.join(os.tmpdir(), anilistID, fileName);
+  const tempPath = path.join(tempDir || os.tmpdir(), anilistID, fileName);
   fs.ensureDirSync(tempPath);
 
   const tempIndexTsPath = path.join(tempPath, "index.ts");

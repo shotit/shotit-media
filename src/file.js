@@ -1,4 +1,5 @@
 import path from "path";
+import fs from "fs-extra";
 import fetch from "node-fetch";
 import stream from "stream";
 import {
@@ -9,6 +10,7 @@ import {
 } from "@aws-sdk/client-s3";
 import { Upload } from "@aws-sdk/lib-storage";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import mp4ToHls from "./lib/mp4-to-hls.js";
 
 const {
   AWS_ENDPOINT_URL,
@@ -93,8 +95,49 @@ export default async (req, res) => {
       });
 
       await parallelUploads3.done();
-      res.sendStatus(204);
       console.log(`Uploaded ${videoFilePath}`);
+
+      console.log(`Uploading to hls/${videoFilePath}`);
+
+      const hlsDir = mp4ToHls(videoFilePath);
+
+      const files = fs.readdirSync(hlsDir);
+
+      for (const file of files) {
+        try {
+          const fileBuffer = fs.createReadStream(path.join(hlsDir, file));
+          const passThroughStream = new stream.PassThrough();
+
+          const fileUploadParams = Object.assign(params, {
+            Key: `hls/${req.params.anilistID}/${req.params.filename}/${file}`,
+            Body: passThroughStream,
+          });
+
+          const parallelUploads3 = new Upload({
+            client: s3,
+            // tags: [...], // optional tags
+            queueSize: 4, // optional concurrency configuration
+            leavePartsOnError: false, // optional manually handle dropped parts
+            params: fileUploadParams,
+          });
+
+          fileBuffer.pipe(passThroughStream);
+
+          parallelUploads3.on("httpUploadProgress", (progress) => {
+            console.log(progress);
+          });
+
+          await parallelUploads3.done();
+        } catch (e) {
+          error500(e, res);
+        }
+      }
+
+      console.log(`Uploaded to hls/${videoFilePath}`);
+
+      fs.rmSync(hlsDir, { recursive: true, force: true });
+
+      res.sendStatus(204);
     } catch (e) {
       error500(e, res);
     }

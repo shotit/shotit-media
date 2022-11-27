@@ -1,11 +1,13 @@
 import path from "path";
-import { S3Client, HeadObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+// import { S3Client, HeadObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
+import { S3Client, HeadObjectCommand } from "@aws-sdk/client-s3";
+// import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import crypto from "crypto";
 import child_process from "child_process";
 
 const {
   AWS_ENDPOINT_URL,
+  AWS_HLS_URL,
   AWS_ACCESS_KEY,
   AWS_SECRET_KEY,
   AWS_BUCKET,
@@ -94,7 +96,8 @@ export default async (req, res) => {
 
   const params = {
     Bucket: AWS_BUCKET,
-    Key: `${req.params.anilistID}/${req.params.filename.replace(/\.jpg$/, "")}`,
+    // Key: `${req.params.anilistID}/${req.params.filename.replace(/\.jpg$/, "")}`,
+    Key: `hls/${req.params.anilistID}/${req.params.filename.replace(/\.jpg$/, "")}/index.m3u8`,
   };
   try {
     command = new HeadObjectCommand(params);
@@ -108,9 +111,24 @@ export default async (req, res) => {
     return res.status(400).send("Bad Request. Invalid param: size");
   }
   try {
-    command = new GetObjectCommand(params);
-    const signedUrl = await getSignedUrl(s3, command, { expiresIn: 60 * 5 });
-    const image = generateImagePreview(signedUrl, t, size);
+    //////////////////////////
+    // Previous mp4 version://
+    //////////////////////////
+
+    // command = new GetObjectCommand(params);
+    // const signedUrl = await getSignedUrl(s3, command, { expiresIn: 60 * 5 });
+
+    // const image = generateImagePreview(signedUrl, t, size);
+    // res.set("Content-Type", "image/jpg");
+    // res.send(image);
+
+    //////////////////////////
+    // Current HLS version://
+    //////////////////////////
+
+    // Note: AWS S3 prefix authentication and CORS config
+    const targetHlsUrl = `${AWS_HLS_URL}/${params.Key}`;
+    const image = generateImagePreview(targetHlsUrl, t, size);
     res.set("Content-Type", "image/jpg");
     res.send(image);
   } catch (e) {

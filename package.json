@@ -29,14 +29,14 @@
     "@aws-sdk/client-s3": "^3.145.0",
     "@aws-sdk/lib-storage": "^3.145.0",
     "@aws-sdk/s3-request-presigner": "^3.145.0",
-    "canvas": "^2.9.3",
-    "dotenv": "^16.0.1",
-    "express": "^4.18.1",
-    "express-rate-limit": "^6.5.1",
+    "canvas": "^2.10.2",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "express-rate-limit": "^6.6.0",
     "fs-extra": "^10.1.0",
     "node-fetch": "^3.2.8"
   },
   "devDependencies": {
-    "prettier": "^2.7.1"
+    "prettier": "^2.8.0"
   }
 }

@@ -37,6 +37,8 @@ const generateImagePreview = (filePath, t, size = "m") => {
     "-loglevel",
     "error",
     "-nostats",
+    "-headers",
+    "Referer: https://ultraman-shot.cc/",
     "-y",
     "-ss",
     t - 10,

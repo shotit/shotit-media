@@ -41,6 +41,8 @@ const generateVideoPreview = (filePath, start, end, size = "m", mute = false) =>
       "-loglevel",
       "error",
       "-nostats",
+      "-headers",
+      "Referer: https://ultraman-shot.cc/",
       "-y",
       "-ss",
       start - 10,

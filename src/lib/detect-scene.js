@@ -37,6 +37,8 @@ export default async (filePath, t, minDuration) => {
   const ffmpeg = child_process.spawnSync(
     "ffmpeg",
     [
+      "-headers",
+      "Referer: https://ultraman-shot.cc/",
       "-y",
       "-ss",
       trimStart - 10,

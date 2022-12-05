@@ -1,7 +1,7 @@
 import path from "path";
-// import { S3Client, HeadObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
-import { S3Client, HeadObjectCommand } from "@aws-sdk/client-s3";
-// import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { S3Client, HeadObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
+// import { S3Client, HeadObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import crypto from "crypto";
 import child_process from "child_process";
 
@@ -117,22 +117,22 @@ export default async (req, res) => {
     // Previous mp4 version://
     //////////////////////////
 
-    // command = new GetObjectCommand(params);
-    // const signedUrl = await getSignedUrl(s3, command, { expiresIn: 60 * 5 });
+    command = new GetObjectCommand(params);
+    const signedUrl = await getSignedUrl(s3, command, { expiresIn: 60 * 5 });
 
-    // const image = generateImagePreview(signedUrl, t, size);
-    // res.set("Content-Type", "image/jpg");
-    // res.send(image);
+    const image = generateImagePreview(signedUrl, t, size);
+    res.set("Content-Type", "image/jpg");
+    res.send(image);
 
     //////////////////////////
     // Current HLS version://
     //////////////////////////
 
-    // Note: AWS S3 prefix authentication and CORS config
-    const targetHlsUrl = `${AWS_HLS_URL}/${params.Key}`;
-    const image = generateImagePreview(targetHlsUrl, t, size);
-    res.set("Content-Type", "image/jpg");
-    res.send(image);
+    // // Note: AWS S3 prefix authentication and CORS config
+    // const targetHlsUrl = `${AWS_HLS_URL}/${params.Key}`;
+    // const image = generateImagePreview(targetHlsUrl, t, size);
+    // res.set("Content-Type", "image/jpg");
+    // res.send(image);
   } catch (e) {
     console.log(e);
     res.status(500).send("Internal Server Error");

@@ -97,9 +97,21 @@ export default async (req, res) => {
       await parallelUploads3.done();
       console.log(`Uploaded ${videoFilePath}`);
 
-      console.log(`Uploading to hls/${videoFilePath}`);
+      // Need to fetch the mp4 file back to convert it to hls files in docker volume,
+      // then upload
+      console.log(
+        `Uploading to ${path.join(VIDEO_PATH, "hls", req.params.anilistID, req.params.filename)}`
+      );
 
-      const hlsDir = mp4ToHls(videoFilePath);
+      command = new GetObjectCommand(params);
+      const signedUrl = await getSignedUrl(s3, command, { expiresIn: 60 * 5 });
+
+      const hlsDir = mp4ToHls(
+        signedUrl,
+        path.join(VIDEO_PATH, "hls"),
+        req.params.anilistID,
+        req.params.filename
+      );
 
       const files = fs.readdirSync(hlsDir);
 

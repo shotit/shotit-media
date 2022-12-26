@@ -15,11 +15,13 @@ import child_process from "child_process";
  *
  * @param {String} filePath
  * @param {String} tempDir
+ * @param {String} anilistID
+ * @param {String} fileName
  * @returns {String | null}
  */
-export default (filePath, tempDir = "") => {
-  const anilistID = filePath.split(path.sep).slice(-2)[0];
-  const fileName = filePath.split(path.sep).slice(-2)[1];
+export default (filePath, tempDir = "", anilistID, fileName) => {
+  // const anilistID = filePath.split(path.sep).slice(-2)[0];
+  // const fileName = filePath.split(path.sep).slice(-2)[1];
 
   const tempPath = path.join(tempDir || os.tmpdir(), anilistID, fileName);
   fs.ensureDirSync(tempPath);

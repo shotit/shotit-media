@@ -113,9 +113,13 @@ export default async (req, res) => {
     return res.status(400).send("Bad Request. Invalid param: size");
   }
   try {
-    //////////////////////////
-    // Previous mp4 version://
-    //////////////////////////
+    ///////////////////////////
+    // Previous mp4 version: //
+    // (Note: now handing hls//
+    // files because of the  //
+    // param 'hls' key above //
+    // and it works.) :)     //
+    ///////////////////////////
 
     command = new GetObjectCommand(params);
     const signedUrl = await getSignedUrl(s3, command, { expiresIn: 60 * 5 });

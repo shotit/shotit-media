@@ -143,9 +143,13 @@ export default async (req, res) => {
   }
   const minDuration = Number(req.query.minDuration) || 0.25;
   try {
-    //////////////////////////
-    // Previous mp4 version://
-    //////////////////////////
+    ///////////////////////////
+    // Previous mp4 version: //
+    // (Note: now handing hls//
+    // files because of the  //
+    // param 'hls' key above //
+    // and it works.) :)     //
+    ///////////////////////////
 
     command = new GetObjectCommand(params);
     const signedUrl = await getSignedUrl(s3, command, { expiresIn: 60 * 5 });

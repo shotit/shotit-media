@@ -71,7 +71,9 @@ export default (filePath, tempDir = "", anilistID, fileName) => {
     ).stdout;
     !stdLog && console.log(`wirte file ${tempIndexM3u8Path} & ${temp10sTsPath}`);
 
-    fs.unlinkSync(tempIndexTsPath);
+    if (fs.existsSync(tempIndexTsPath)) {
+      fs.unlinkSync(tempIndexTsPath);
+    }
     console.log(`Remove file ${tempIndexTsPath}`);
 
     return tempPath;

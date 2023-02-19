@@ -80,6 +80,9 @@ app.use("/admin", checkIP, admin);
 
 app.use("/admin", checkIP, express.static(VIDEO_PATH));
 
+// For the purpose of qq-bot to verify https address
+app.use(express.static("public"));
+
 if (TRACE_API_SECRET) {
   console.log("Video upload/download secured by TRACE_API_SECRET");
 }

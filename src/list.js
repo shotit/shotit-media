@@ -12,6 +12,7 @@ const {
 
 const opts = AWS_ENDPOINT_URL
   ? {
+      forcePathStyle: true,
       endpoint: AWS_ENDPOINT_URL,
       region: AWS_REGION,
       credentials: {

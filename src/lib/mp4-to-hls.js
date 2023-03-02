@@ -43,7 +43,11 @@ export default (filePath, tempDir = "", anilistID, fileName) => {
       tempIndexTsPath,
     ],
     { encoding: "utf-8" }
-  ).stdout;
+  );
+
+  console.log({ filePath });
+  console.log({ stdLog }); // to check ffmpeg log
+  stdLog = stdLog.stdout;
 
   console.log(`wirte file ${tempIndexTsPath}`);
 

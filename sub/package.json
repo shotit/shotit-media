@@ -1,0 +1,42 @@
+{
+  "name": "shotit-media",
+  "version": "0.2.0",
+  "description": "Media broker for shotit",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "pm2 start ecosystem.config.json",
+    "stop": "pm2 stop ecosystem.config.json",
+    "restart": "pm2 restart ecosystem.config.json",
+    "reload": "pm2 reload ecosystem.config.json",
+    "delete": "pm2 delete ecosystem.config.json",
+    "prettier": "prettier",
+    "format": "prettier --write \"**/*.js\"",
+    "lint": "prettier --check \"**/*.js\"",
+    "test": "prettier --check \"**/*.js\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shotit/shotit-media.git"
+  },
+  "author": "PolarBeaver Technology",
+  "license": "Apache II",
+  "bugs": {
+    "url": "https://github.com/shotit/shotit-media/issues"
+  },
+  "homepage": "https://github.com/shotit/shotit-media#readme",
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.282.0",
+    "@aws-sdk/lib-storage": "^3.282.0",
+    "@aws-sdk/s3-request-presigner": "^3.282.0",
+    "canvas": "^2.11.0",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "express-rate-limit": "^6.6.0",
+    "fs-extra": "^10.1.0",
+    "node-fetch": "^3.3.0"
+  },
+  "devDependencies": {
+    "prettier": "^2.8.0"
+  }
+}

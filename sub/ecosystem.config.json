@@ -1,7 +1,7 @@
 {
   "apps": [
     {
-      "name": "trace.moe-media",
+      "name": "shotit-media",
       "script": "server.js",
       "instances": 4,
       "autorestart": true,

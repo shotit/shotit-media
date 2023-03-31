@@ -80,9 +80,6 @@ app.use("/admin", checkIP, admin);
 
 app.use("/admin", checkIP, express.static(VIDEO_PATH));
 
-// For the purpose of qq-bot to verify https address
-app.use(express.static("public"));
-
 if (TRACE_API_SECRET) {
   console.log("Video upload/download secured by TRACE_API_SECRET");
 }
@@ -92,5 +89,5 @@ if (TRACE_MEDIA_SALT) {
 
 console.log(`VIDEO_PATH: ${VIDEO_PATH}`);
 app.listen(SERVER_PORT, SERVER_ADDR, () =>
-  console.log(`Media server listening on ${SERVER_ADDR}:${SERVER_PORT}`)
+  console.log(`Media broker listening on ${SERVER_ADDR}:${SERVER_PORT}`)
 );

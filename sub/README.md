@@ -1,18 +1,17 @@
-# trace.moe-media
+# Shotit-media
 
-[![License](https://img.shields.io/github/license/soruly/trace.moe-media.svg?style=flat-square)](https://github.com/soruly/trace.moe-media/blob/master/LICENSE)
-[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/soruly/trace.moe-media/Docker%20Image%20CI?style=flat-square)](https://github.com/soruly/trace.moe-media/actions)
-[![Docker](https://img.shields.io/docker/pulls/soruly/trace.moe-media?style=flat-square)](https://hub.docker.com/r/soruly/trace.moe-media)
-[![Docker Image Size](https://img.shields.io/docker/image-size/soruly/trace.moe-media/latest?style=flat-square)](https://hub.docker.com/r/soruly/trace.moe-media)
-[![Discord](https://img.shields.io/discord/437578425767559188.svg?style=flat-square)](https://discord.gg/K9jn6Kj)
+[![License](https://img.shields.io/github/license/shotit/shotit-media.svg?style=flat-square)](https://github.com/shotit/shotit-media/blob/master/LICENSE)
+[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/shotit/shotit-media/Docker%20Image%20CI?style=flat-square)](https://github.com/shotit/shotit-media/actions)
+[![Docker](https://img.shields.io/docker/pulls/lesliewong007/shotit-media?style=flat-square)](https://hub.docker.com/r/lesliewong007/shotit-media)
+[![Docker Image Size](https://img.shields.io/docker/image-size/lesliewong007/shotit-media/latest?style=flat-square)](https://hub.docker.com/r/lesliewong007/shotit-media)
 
-### Media server for serving video preview for trace.moe
+### Media broker for serving video preview for shotit
 
-This server uses a "video scene cutter" which automatically detect timestamp boundaries of a shot, and then trim the shot out without leaking / exposing other frames that belongs to previous / next scenes. Currently this is used by the website [trace.moe](https://trace.moe) and its Telegram Bot [@whatanimebot](http://t.me/whatanimebot).
+This server uses a "video scene cutter" which automatically detect timestamp boundaries of a shot, and then trim the shot out without leaking / exposing other frames that belongs to previous / next scenes.
 
 #### Background of this project
 
-When search result from trace.moe returns an anime, episode and a timecode, it can generate a video preview for the scene at that time code.
+When search result from shotit returns an anime, episode and a timecode, it can generate a video preview for the scene at that time code.
 
 Query image:
 
@@ -22,7 +21,7 @@ Search result: `Shelter, episode 1, timecode: 00:00:51.83`
 
 Video Preview at time `00:00:51.83`
 
-|           Fixed offset without trace.moe-media           |             Auto detect with trace.moe-media             |
+|            Fixed offset without shotit-media             |              Auto detect with shotit-media               |
 | :------------------------------------------------------: | :------------------------------------------------------: |
 | ![](https://images.plurk.com/7lURadxyYVrvPl52M7mm3G.gif) | ![](https://images.plurk.com/2mcJxwtMJFSVhLQ8XDUYI3.gif) |
 |            00:50.93 (-0.9) to 00:53.93 (+2.1)            |              00:49.22 to 00:51.30 (dynamic)              |
@@ -39,7 +38,7 @@ To be completed
 ### Getting Started
 
 ```bash
-docker run -it --rm -v /path/to/video/=/mnt/ -p 3000:3000 ghcr.io/soruly/trace.moe-media:latest
+docker run -it --rm -v /path/to/video/=/mnt/ -p 3000:3000 ghcr.io/shotit/shotit-media:latest
 ```
 
 #### List files
@@ -95,7 +94,7 @@ VIDEO_PATH=         # e.g. /mnt/data/anilist/
 SERVER_PORT=        # e.g. 3001
 SERVER_ADDR=        # e.g. 127.0.0.1 or 0.0.0.0
 TRACE_MEDIA_SALT=   # define any random string, or leave blank to disable secure token
-TRACE_API_SECRET=   # same as TRACE_API_SECRET in trace.moe api's .env, or leave blank to disable auth
+TRACE_API_SECRET=   # same as TRACE_API_SECRET in shotit api's .env, or leave blank to disable auth
 ```
 
 ### Local Development

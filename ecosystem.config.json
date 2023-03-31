@@ -1,0 +1,11 @@
+{
+  "apps": [
+    {
+      "name": "shotit-media",
+      "script": "server.js",
+      "instances": 4,
+      "autorestart": true,
+      "exec_mode": "cluster"
+    }
+  ]
+}

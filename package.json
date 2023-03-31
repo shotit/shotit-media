@@ -20,7 +20,7 @@
     "url": "git+https://github.com/shotit/shotit-media.git"
   },
   "author": "PolarBeaver Technology",
-  "license": "Apache II",
+  "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/shotit/shotit-media/issues"
   },
@@ -37,6 +37,6 @@
     "node-fetch": "^3.3.1"
   },
   "devDependencies": {
-    "prettier": "^2.8.0"
+    "prettier": "2.8.0"
   }
 }

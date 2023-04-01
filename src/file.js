@@ -10,6 +10,7 @@ import {
 } from "@aws-sdk/client-s3";
 import { Upload } from "@aws-sdk/lib-storage";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import sanitize from "sanitize-filename";
 import mp4ToHls from "./lib/mp4-to-hls.js";
 
 const {
@@ -43,7 +44,11 @@ function error500(e, res) {
 }
 
 export default async (req, res) => {
-  const videoFilePath = path.join(VIDEO_PATH, req.params.anilistID, req.params.filename);
+  const videoFilePath = path.join(
+    VIDEO_PATH,
+    sanitize(req.params.anilistID),
+    sanitize(req.params.filename)
+  );
   if (!videoFilePath.startsWith(VIDEO_PATH)) {
     res.status(403).send("Forbidden");
     return;
@@ -51,7 +56,7 @@ export default async (req, res) => {
 
   const params = {
     Bucket: AWS_BUCKET,
-    Key: `mp4/${req.params.anilistID}/${req.params.filename}`,
+    Key: `mp4/${sanitize(req.params.anilistID)}/${sanitize(req.params.filename)}`,
   };
 
   if (req.method === "GET") {
@@ -101,7 +106,12 @@ export default async (req, res) => {
       // Need to fetch the mp4 file back to convert it to hls files in docker volume,
       // then upload
       console.log(
-        `Uploading to ${path.join(VIDEO_PATH, "hls", req.params.anilistID, req.params.filename)}`
+        `Uploading to ${path.join(
+          VIDEO_PATH,
+          "hls",
+          sanitize(req.params.anilistID),
+          sanitize(req.params.filename)
+        )}`
       );
 
       command = new GetObjectCommand(params);
@@ -110,8 +120,8 @@ export default async (req, res) => {
       const hlsDir = mp4ToHls(
         signedUrl,
         path.join(VIDEO_PATH, "hls"),
-        req.params.anilistID,
-        req.params.filename
+        sanitize(req.params.anilistID),
+        sanitize(req.params.filename)
       );
 
       const files = fs.readdirSync(hlsDir);
@@ -122,7 +132,9 @@ export default async (req, res) => {
           const passThroughStream = new stream.PassThrough();
 
           const fileUploadParams = Object.assign(params, {
-            Key: `hls/${req.params.anilistID}/${req.params.filename}/${file}`,
+            Key: `hls/${sanitize(req.params.anilistID)}/${sanitize(req.params.filename)}/${sanitize(
+              file
+            )}`,
             Body: passThroughStream,
           });
 

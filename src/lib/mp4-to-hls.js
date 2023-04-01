@@ -2,6 +2,7 @@ import path from "path";
 import fs from "fs-extra";
 import os from "os";
 import child_process from "child_process";
+import sanitize from "sanitize-filename";
 
 /**
  *
@@ -23,7 +24,11 @@ export default (filePath, tempDir = "", anilistID, fileName) => {
   // const anilistID = filePath.split(path.sep).slice(-2)[0];
   // const fileName = filePath.split(path.sep).slice(-2)[1];
 
-  const tempPath = path.join(tempDir || os.tmpdir(), anilistID, fileName);
+  const tempPath = path.join(
+    sanitize(tempDir) || os.tmpdir(),
+    sanitize(anilistID),
+    sanitize(fileName)
+  );
   fs.ensureDirSync(tempPath);
 
   const tempIndexTsPath = path.join(tempPath, "index.ts");

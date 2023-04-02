@@ -1,7 +1,8 @@
 # Shotit-media
 
-[![License](https://img.shields.io/github/license/shotit/shotit-media.svg?style=flat-square)](https://github.com/shotit/shotit-media/blob/master/LICENSE)
-[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/shotit/shotit-media/Docker%20Image%20CI?style=flat-square)](https://github.com/shotit/shotit-media/actions)
+[![License](https://img.shields.io/github/license/shotit/shotit-media.svg?style=flat-square)](https://github.com/shotit/shotit-media/blob/main/LICENSE)
+[![Coverage](https://img.shields.io/codecov/c/github/shotit/shotit-media/main.svg?style=flat)](https://app.codecov.io/gh/shotit/shotit-media/branch/main)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/shotit/shotit-media/docker-image.yml?branch=main&style=flat-square)](https://github.com/shotit/shotit-media/actions)
 [![Docker](https://img.shields.io/docker/pulls/lesliewong007/shotit-media?style=flat-square)](https://hub.docker.com/r/lesliewong007/shotit-media)
 [![Docker Image Size](https://img.shields.io/docker/image-size/lesliewong007/shotit-media/latest?style=flat-square)](https://hub.docker.com/r/lesliewong007/shotit-media)
 

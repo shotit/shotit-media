@@ -70,6 +70,8 @@ app.use("/file/:anilistID/:filename", checkSecret, file);
 
 app.use("/list", checkSecret, list);
 
+app.use("/check-ip", checkIP);
+
 app.use("/admin", checkIP, admin);
 
 app.use("/admin", checkIP, express.static(VIDEO_PATH));

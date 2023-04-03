@@ -46,7 +46,7 @@ function error500(e, res) {
 export default async (req, res) => {
   const videoFilePath = path.join(
     VIDEO_PATH,
-    sanitize(req.params.anilistID),
+    sanitize(req.params.imdbID),
     sanitize(req.params.filename)
   );
   if (!videoFilePath.startsWith(VIDEO_PATH)) {
@@ -56,7 +56,7 @@ export default async (req, res) => {
 
   const params = {
     Bucket: AWS_BUCKET,
-    Key: `mp4/${sanitize(req.params.anilistID)}/${sanitize(req.params.filename)}`,
+    Key: `mp4/${sanitize(req.params.imdbID)}/${sanitize(req.params.filename)}`,
   };
 
   if (req.method === "GET") {
@@ -109,7 +109,7 @@ export default async (req, res) => {
         `Uploading to ${path.join(
           VIDEO_PATH,
           "hls",
-          sanitize(req.params.anilistID),
+          sanitize(req.params.imdbID),
           sanitize(req.params.filename)
         )}`
       );
@@ -120,7 +120,7 @@ export default async (req, res) => {
       const hlsDir = mp4ToHls(
         signedUrl,
         path.join(VIDEO_PATH, "hls"),
-        sanitize(req.params.anilistID),
+        sanitize(req.params.imdbID),
         sanitize(req.params.filename)
       );
 
@@ -132,7 +132,7 @@ export default async (req, res) => {
           const passThroughStream = new stream.PassThrough();
 
           const fileUploadParams = Object.assign(params, {
-            Key: `hls/${sanitize(req.params.anilistID)}/${sanitize(req.params.filename)}/${sanitize(
+            Key: `hls/${sanitize(req.params.imdbID)}/${sanitize(req.params.filename)}/${sanitize(
               file
             )}`,
             Body: passThroughStream,

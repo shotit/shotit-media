@@ -33,7 +33,7 @@ export default async (req, res) => {
   }
   const params = {
     Bucket: AWS_BUCKET,
-    Key: `mp4/${req.params.anilistID}/${req.params.filename}`,
+    Key: `mp4/${req.params.imdbID}/${req.params.filename}`,
   };
 
   try {

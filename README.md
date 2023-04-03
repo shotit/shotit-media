@@ -91,7 +91,7 @@ http://127.0.0.1:3000/image/foo/bar.mp4?t=87&size=l
 ### Environment variables
 
 ```
-VIDEO_PATH=         # e.g. /mnt/data/anilist/
+VIDEO_PATH=         # e.g. /mnt/data/imdb/
 SERVER_PORT=        # e.g. 3001
 SERVER_ADDR=        # e.g. 127.0.0.1 or 0.0.0.0
 TRACE_MEDIA_SALT=   # define any random string, or leave blank to disable secure token

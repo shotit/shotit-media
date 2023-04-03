@@ -1,4 +1,3 @@
-import path from "path";
 import { S3Client, HeadObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import crypto from "crypto";
@@ -11,7 +10,6 @@ const {
   AWS_SECRET_KEY,
   AWS_BUCKET,
   AWS_REGION,
-  VIDEO_PATH = "/mnt/",
   TRACE_MEDIA_SALT,
 } = process.env;
 
@@ -87,14 +85,6 @@ export default async (req, res) => {
   if (isNaN(t) || t < 0) {
     return res.status(400).send("Bad Request. Invalid param: t");
   }
-  const videoFilePath = path.join(
-    VIDEO_PATH,
-    req.params.imdbID,
-    req.params.filename.replace(/\.jpg$/, "")
-  );
-  if (!videoFilePath.startsWith(VIDEO_PATH)) {
-    return res.status(403).send("Forbidden");
-  }
 
   const params = {
     Bucket: AWS_BUCKET,
@@ -114,7 +104,7 @@ export default async (req, res) => {
   }
   try {
     ///////////////////////////
-    // Previous mp4 version: //
+    //      mp4 version:     //
     // (Note: now handing hls//
     // files because of the  //
     // param 'hls' key above //
@@ -129,7 +119,7 @@ export default async (req, res) => {
     res.send(image);
 
     //////////////////////////
-    // Current HLS version://
+    //      HLS version:    //
     //////////////////////////
 
     // // Note: AWS S3 prefix authentication and CORS config

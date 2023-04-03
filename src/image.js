@@ -36,7 +36,7 @@ const generateImagePreview = (filePath, t, size = "m") => {
     "error",
     "-nostats",
     "-headers",
-    "Referer: https://ultraman-shot.cc/",
+    "Referer: https://shotit.github.io/",
     "-y",
     "-ss",
     t - 10,
@@ -89,7 +89,9 @@ export default async (req, res) => {
   const params = {
     Bucket: AWS_BUCKET,
     // Key: `${req.params.imdbID}/${req.params.filename.replace(/\.jpg$/, "")}`,
-    Key: `hls/${req.params.imdbID}/${req.params.filename.replace(/\.jpg$/, "")}/index.m3u8`,
+    Key: `hls/${req.params.imdbID}/${decodeURIComponent(
+      req.params.filename.replace(/\.jpg$/, "")
+    )}/index.m3u8`,
   };
   try {
     command = new HeadObjectCommand(params);

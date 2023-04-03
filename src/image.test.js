@@ -58,6 +58,34 @@ test(
 );
 
 test(
+  "GET /image Gone",
+  async () => {
+    const to = 10,
+      from = 10;
+    const window = 60 * 60; // 3600 seconds
+    const now = ((Date.now() / 1000 / window) | 0) * window + window - window - 301; // Gone
+    const mid = from + (to - from) / 2;
+    const imdb_id = "tt1254207";
+    const filename = "Big Buck Bunny.mp4";
+    const imageToken = crypto
+      .createHash("sha1")
+      .update([imdb_id, `${filename}.jpg`, mid, now, TRACE_MEDIA_SALT].join(""))
+      .digest("base64")
+      .replace(/[^0-9A-Za-z]/g, "");
+    const response = await request(app).get(
+      `/image/${imdb_id}/${encodeURIComponent(filename)}.jpg?${[
+        `t=${mid}`,
+        `now=${now}`,
+        `token=${imageToken}`,
+      ].join("&")}`
+    );
+    expect(response.statusCode).toBe(410);
+    expect(response.text).toBe("Gone");
+  },
+  60 * 1000
+);
+
+test(
   "GET /image Bad Request. Invalid param: t",
   async () => {
     const to = 10,

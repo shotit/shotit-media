@@ -102,7 +102,7 @@
   dependencies:
     tslib "^2.5.0"
 
-"@aws-sdk/client-s3@^3.303.0":
+"@aws-sdk/client-s3@^3.304.0":
   version "3.304.0"
   resolved "https://registry.yarnpkg.com/@aws-sdk/client-s3/-/client-s3-3.304.0.tgz#946a8f3c074f3f0a70dc1ae6be094cd6ea910a09"
   integrity sha512-KBtkcFR47AQj8cqEhVsuJZaYRRox8e97H6cF2fnzGZLSwL9eW2tLaXKhwHmM5JPoNdye3f8ZFFFX/cySJ9COnA==
@@ -471,7 +471,7 @@
   dependencies:
     tslib "^2.5.0"
 
-"@aws-sdk/lib-storage@^3.303.0":
+"@aws-sdk/lib-storage@^3.304.0":
   version "3.304.0"
   resolved "https://registry.yarnpkg.com/@aws-sdk/lib-storage/-/lib-storage-3.304.0.tgz#01da9846ed30f3f263a489b2de414a599a55ab7f"
   integrity sha512-aSL4WspY7PgLant6FzWGJvesTgKZSv6pCZvEvb6WvidEl5R7w2X5ZDZHcgZ+U8jZHKRxIOQ+SSIN1n1SkUhq/w==
@@ -710,7 +710,7 @@
     "@aws-sdk/types" "3.303.0"
     tslib "^2.5.0"
 
-"@aws-sdk/s3-request-presigner@^3.303.0":
+"@aws-sdk/s3-request-presigner@^3.304.0":
   version "3.304.0"
   resolved "https://registry.yarnpkg.com/@aws-sdk/s3-request-presigner/-/s3-request-presigner-3.304.0.tgz#5194b02477f9644e3369efca1ac5521ccc417c2d"
   integrity sha512-uaH+bRV3EzifFttM2crc1lmeXr2fgUmlE81i0L/vdhmCVdjEg71IgWSxkYV0e2qYnwYnnQ3A2b0hgTdLACH48A==

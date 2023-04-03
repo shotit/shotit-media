@@ -66,6 +66,8 @@ app.get("/video/:anilistID/:filename", video);
 
 app.get("/image/:anilistID/:filename", image);
 
+app.use("/check-secret", checkSecret);
+
 app.use("/file/:anilistID/:filename", checkSecret, file);
 
 app.use("/list", checkSecret, list);

@@ -10,7 +10,7 @@ export default async (filePath, t, minDuration) => {
     return null;
   }
 
-  const videoDuration = getVideoDuration(filePath);
+  const videoDuration = await getVideoDuration(filePath);
   if (videoDuration === null || t > videoDuration) {
     return null;
   }
@@ -38,7 +38,7 @@ export default async (filePath, t, minDuration) => {
     "ffmpeg",
     [
       "-headers",
-      "Referer: https://ultraman-shot.cc/",
+      "Referer: https://shotit.github.io/",
       "-y",
       "-ss",
       trimStart - 10,

@@ -1,4 +1,3 @@
-import path from "path";
 import { S3Client, HeadObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import crypto from "crypto";
@@ -13,7 +12,6 @@ const {
   AWS_SECRET_KEY,
   AWS_BUCKET,
   AWS_REGION,
-  VIDEO_PATH = "/mnt/",
   TRACE_MEDIA_SALT,
 } = process.env;
 
@@ -120,15 +118,11 @@ export default async (req, res) => {
   if (isNaN(t) || t < 0) {
     return res.status(400).send("Bad Request. Invalid param: t");
   }
-  const videoFilePath = path.join(VIDEO_PATH, req.params.imdbID, req.params.filename);
-  if (!videoFilePath.startsWith(VIDEO_PATH)) {
-    return res.status(403).send("Forbidden");
-  }
 
   const params = {
     Bucket: AWS_BUCKET,
     // Key: `${req.params.imdbID}/${req.params.filename}`,
-    Key: `hls/${req.params.imdbID}/${req.params.filename}/index.m3u8`,
+    Key: `hls/${req.params.imdbID}/${decodeURIComponent(req.params.filename)}/index.m3u8`,
   };
   try {
     command = new HeadObjectCommand(params);
@@ -144,7 +138,7 @@ export default async (req, res) => {
   const minDuration = Number(req.query.minDuration) || 0.25;
   try {
     ///////////////////////////
-    // Previous mp4 version: //
+    //      mp4 version:     //
     // (Note: now handing hls//
     // files because of the  //
     // param 'hls' key above //
@@ -155,7 +149,7 @@ export default async (req, res) => {
     const signedUrl = await getSignedUrl(s3, command, { expiresIn: 60 * 5 });
     const scene = await detectScene(signedUrl, t, minDuration > 2 ? 2 : minDuration);
     if (scene === null) {
-      return res.status(500).send("Internal Server Error");
+      return res.status(503).send("Service Unavailable");
     }
     const video = generateVideoPreview(
       signedUrl,
@@ -172,7 +166,7 @@ export default async (req, res) => {
     res.send(video);
 
     //////////////////////////
-    // Current HLS version://
+    //       HLS version:   //
     //////////////////////////
 
     // // Note: AWS S3 prefix authentication and CORS config

@@ -7,6 +7,7 @@ import {
   HeadObjectCommand,
   GetObjectCommand,
   DeleteObjectCommand,
+  ListObjectsCommand,
 } from "@aws-sdk/client-s3";
 import { Upload } from "@aws-sdk/lib-storage";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
@@ -49,10 +50,6 @@ export default async (req, res) => {
     sanitize(req.params.imdbID),
     sanitize(req.params.filename)
   );
-  if (!videoFilePath.startsWith(VIDEO_PATH)) {
-    res.status(403).send("Forbidden");
-    return;
-  }
 
   const params = {
     Bucket: AWS_BUCKET,
@@ -101,7 +98,7 @@ export default async (req, res) => {
       });
 
       await parallelUploads3.done();
-      console.log(`Uploaded ${videoFilePath}`);
+      console.log(`Uploaded(mp4) to ${videoFilePath}`);
 
       // Need to fetch the mp4 file back to convert it to hls files in docker volume,
       // then upload
@@ -158,11 +155,11 @@ export default async (req, res) => {
         }
       }
 
-      console.log(`Uploaded to hls/${videoFilePath}`);
+      console.log(`Uploaded(hls) to ${videoFilePath}`);
 
       fs.rmSync(hlsDir, { recursive: true, force: true });
 
-      res.sendStatus(204);
+      res.status(204).send("Uploaded");
     } catch (e) {
       error500(e, res);
     }
@@ -176,12 +173,37 @@ export default async (req, res) => {
       return;
     }
 
-    console.log(`Deleting ${videoFilePath}`);
+    console.log(`Deleting(mp4) ${videoFilePath}`);
     command = new DeleteObjectCommand(params);
     await s3.send(command).catch((e) => {
       error500(e, res);
     });
+    console.log(`Deleted(mp4) ${videoFilePath}`);
+
+    console.log(`Deleting(hls) ${videoFilePath}`);
+    let response = {};
+    try {
+      const params = {
+        Bucket: AWS_BUCKET,
+        Prefix: `hls/${req.params.imdbID}/${sanitize(req.params.filename)}`,
+      };
+      command = new ListObjectsCommand(params);
+      response = await s3.send(command);
+      for (const item of response.Contents) {
+        const params = {
+          Bucket: AWS_BUCKET,
+          Key: item.Key,
+        };
+        command = new DeleteObjectCommand(params);
+        await s3.send(command).catch((e) => {
+          error500(e, res);
+        });
+      }
+      console.log(`Deleted(hls) ${videoFilePath}`);
+    } catch (err) {
+      console.log("Error", err);
+      error500(err, res);
+    }
     res.sendStatus(204);
-    console.log(`Deleted ${videoFilePath}`);
   }
 };

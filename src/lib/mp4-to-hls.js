@@ -24,11 +24,7 @@ export default (filePath, tempDir = "", imdbID, fileName) => {
   // const imdbID = filePath.split(path.sep).slice(-2)[0];
   // const fileName = filePath.split(path.sep).slice(-2)[1];
 
-  const tempPath = path.join(
-    sanitize(tempDir) || os.tmpdir(),
-    sanitize(imdbID),
-    sanitize(fileName)
-  );
+  const tempPath = path.join(tempDir || os.tmpdir(), sanitize(imdbID), sanitize(fileName));
   fs.ensureDirSync(tempPath);
 
   const tempIndexTsPath = path.join(tempPath, "index.ts");

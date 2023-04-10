@@ -5,14 +5,7 @@ import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-const {
-  AWS_ENDPOINT_URL,
-  AWS_ACCESS_KEY,
-  AWS_SECRET_KEY,
-  AWS_BUCKET,
-  AWS_REGION,
-  VIDEO_PATH = "/mnt",
-} = process.env;
+const { AWS_ENDPOINT_URL, AWS_ACCESS_KEY, AWS_SECRET_KEY, AWS_BUCKET, AWS_REGION } = process.env;
 
 const opts = AWS_ENDPOINT_URL
   ? {
@@ -40,11 +33,6 @@ export default async (req, res, next) => {
 
   if (!req.url.endsWith("/")) return next();
 
-  const videoDirPath = path.join(VIDEO_PATH, req.path);
-  if (!videoDirPath.startsWith(VIDEO_PATH)) {
-    return res.status(403).send("Forbidden");
-  }
-
   const params = {
     Bucket: AWS_BUCKET,
   };
@@ -53,8 +41,15 @@ export default async (req, res, next) => {
 
   try {
     command = new ListObjectsCommand(params);
-    const response = await s3.send(command);
+    let response = await s3.send(command);
     objectList = response.Contents.map((e) => e.Key);
+
+    while (response.Contents.length === 1000) {
+      params.Marker = response.Contents[999].Key;
+      command = new ListObjectsCommand(params);
+      response = await s3.send(command);
+      objectList = objectList.concat(response.Contents.map((e) => e.Key));
+    }
   } catch (err) {
     console.log("Error", err);
     return res.status(404).send("Not found");

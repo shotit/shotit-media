@@ -62,13 +62,17 @@ app.use(
 
 app.all("/", (req, res) => res.send("ok"));
 
-app.get("/video/:anilistID/:filename", video);
+app.get("/video/:imdbID/:filename", video);
 
-app.get("/image/:anilistID/:filename", image);
+app.get("/image/:imdbID/:filename", image);
 
-app.use("/file/:anilistID/:filename", checkSecret, file);
+app.use("/check-secret", checkSecret);
+
+app.use("/file/:imdbID/:filename", checkSecret, file);
 
 app.use("/list", checkSecret, list);
+
+app.use("/check-ip", checkIP);
 
 app.use("/admin", checkIP, admin);
 

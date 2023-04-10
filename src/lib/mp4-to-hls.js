@@ -16,19 +16,15 @@ import sanitize from "sanitize-filename";
  *
  * @param {String} filePath
  * @param {String} tempDir
- * @param {String} anilistID
+ * @param {String} imdbID
  * @param {String} fileName
  * @returns {String | null}
  */
-export default (filePath, tempDir = "", anilistID, fileName) => {
-  // const anilistID = filePath.split(path.sep).slice(-2)[0];
+export default (filePath, tempDir = "", imdbID, fileName) => {
+  // const imdbID = filePath.split(path.sep).slice(-2)[0];
   // const fileName = filePath.split(path.sep).slice(-2)[1];
 
-  const tempPath = path.join(
-    sanitize(tempDir) || os.tmpdir(),
-    sanitize(anilistID),
-    sanitize(fileName)
-  );
+  const tempPath = path.join(tempDir || os.tmpdir(), sanitize(imdbID), sanitize(fileName));
   fs.ensureDirSync(tempPath);
 
   const tempIndexTsPath = path.join(tempPath, "index.ts");

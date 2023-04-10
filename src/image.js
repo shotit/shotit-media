@@ -1,18 +1,15 @@
-import path from "path";
 import { S3Client, HeadObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
-// import { S3Client, HeadObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import crypto from "crypto";
 import child_process from "child_process";
 
 const {
   AWS_ENDPOINT_URL,
-  AWS_HLS_URL,
+  // AWS_HLS_URL,
   AWS_ACCESS_KEY,
   AWS_SECRET_KEY,
   AWS_BUCKET,
   AWS_REGION,
-  VIDEO_PATH = "/mnt/",
   TRACE_MEDIA_SALT,
 } = process.env;
 
@@ -39,7 +36,7 @@ const generateImagePreview = (filePath, t, size = "m") => {
     "error",
     "-nostats",
     "-headers",
-    "Referer: https://ultraman-shot.cc/",
+    "Referer: https://shotit.github.io/",
     "-y",
     "-ss",
     t - 10,
@@ -71,7 +68,7 @@ export default async (req, res) => {
         .createHash("sha1")
         .update(
           [
-            req.params.anilistID,
+            req.params.imdbID,
             req.params.filename,
             req.query.t,
             req.query.now,
@@ -88,19 +85,13 @@ export default async (req, res) => {
   if (isNaN(t) || t < 0) {
     return res.status(400).send("Bad Request. Invalid param: t");
   }
-  const videoFilePath = path.join(
-    VIDEO_PATH,
-    req.params.anilistID,
-    req.params.filename.replace(/\.jpg$/, "")
-  );
-  if (!videoFilePath.startsWith(VIDEO_PATH)) {
-    return res.status(403).send("Forbidden");
-  }
 
   const params = {
     Bucket: AWS_BUCKET,
-    // Key: `${req.params.anilistID}/${req.params.filename.replace(/\.jpg$/, "")}`,
-    Key: `hls/${req.params.anilistID}/${req.params.filename.replace(/\.jpg$/, "")}/index.m3u8`,
+    // Key: `${req.params.imdbID}/${req.params.filename.replace(/\.jpg$/, "")}`,
+    Key: `hls/${req.params.imdbID}/${decodeURIComponent(
+      req.params.filename.replace(/\.jpg$/, "")
+    )}/index.m3u8`,
   };
   try {
     command = new HeadObjectCommand(params);
@@ -115,7 +106,7 @@ export default async (req, res) => {
   }
   try {
     ///////////////////////////
-    // Previous mp4 version: //
+    //      mp4 version:     //
     // (Note: now handing hls//
     // files because of the  //
     // param 'hls' key above //
@@ -130,7 +121,7 @@ export default async (req, res) => {
     res.send(image);
 
     //////////////////////////
-    // Current HLS version://
+    //      HLS version:    //
     //////////////////////////
 
     // // Note: AWS S3 prefix authentication and CORS config

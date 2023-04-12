@@ -26,8 +26,19 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - run: yarn install --frozen-lockfile
       # - run: yarn build --if-present
-      - run: yarn test
       - run: yarn jest
+        env:
+          SERVER_PORT: 8024
+          SERVER_ADDR: 127.0.0.1
+          TRACE_MEDIA_SALT: TRACE_MEDIA_SALT
+          TRACE_API_SECRET: TRACE_API_SECRET
+          IP_WHITELIST: ${{ secrets.IP_WHITELIST }}
+          AWS_BUCKET: ${{ secrets.AWS_BUCKET }}
+          AWS_ENDPOINT_URL: ${{ secrets.AWS_ENDPOINT_URL }}
+          AWS_HLS_URL: ${{ secrets.AWS_HLS_URL }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
+          AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
       - name: Codecov
         uses: codecov/codecov-action@v2
         with:

@@ -24,6 +24,10 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
+      - name: Install ffmpeg
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y ffmpeg --fix-missing
       - run: yarn install --frozen-lockfile
       # - run: yarn build --if-present
       - run: yarn jest

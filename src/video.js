@@ -1,13 +1,12 @@
 import { S3Client, HeadObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import crypto from "crypto";
-import child_process from "child_process";
 
 import detectScene from "./lib/detect-scene.js";
+import generateVideoPreview from "./lib/generate-video-preview.js";
 
 const {
   AWS_ENDPOINT_URL,
-  // AWS_HLS_URL,
   AWS_ACCESS_KEY,
   AWS_SECRET_KEY,
   AWS_BUCKET,
@@ -30,68 +29,6 @@ const opts = AWS_ENDPOINT_URL
 const s3 = new S3Client(opts);
 
 let command;
-
-const generateVideoPreview = (filePath, start, end, size = "m", mute = false) => {
-  const ffmpeg = child_process.spawnSync(
-    "ffmpeg",
-    [
-      "-hide_banner",
-      "-loglevel",
-      "error",
-      "-nostats",
-      "-headers",
-      "Referer: https://shotit.github.io/",
-      "-y",
-      "-ss",
-      start - 10,
-      "-i",
-      filePath,
-      "-ss",
-      "10",
-      "-t",
-      end - start,
-      mute ? "-an" : "-y",
-      "-map",
-      "0:v:0",
-      "-map",
-      "0:a:0",
-      "-vf",
-      `scale=${{ l: 640, m: 320, s: 160 }[size]}:-2`,
-      "-c:v",
-      "libx264",
-      "-crf",
-      "23",
-      "-profile:v",
-      "high",
-      "-preset",
-      "faster",
-      "-r",
-      "24000/1001",
-      "-pix_fmt",
-      "yuv420p",
-      "-c:a",
-      "aac",
-      "-b:a",
-      "128k",
-      "-max_muxing_queue_size",
-      "1024",
-      "-movflags",
-      "empty_moov",
-      "-map_metadata",
-      "-1",
-      "-map_chapters",
-      "-1",
-      "-f",
-      "mp4",
-      "-",
-    ],
-    { maxBuffer: 1024 * 1024 * 100 }
-  );
-  if (ffmpeg.stderr.length) {
-    console.log(ffmpeg.stderr.toString());
-  }
-  return ffmpeg.stdout;
-};
 
 export default async (req, res) => {
   if (
@@ -137,24 +74,23 @@ export default async (req, res) => {
   }
   const minDuration = Number(req.query.minDuration) || 0.25;
   try {
-    ///////////////////////////
-    //      mp4 version:     //
-    // (Note: now handing hls//
-    // files because of the  //
-    // param 'hls' key above //
-    // and it works.) :)     //
-    ///////////////////////////
-
-    command = new GetObjectCommand(params);
-    const signedUrl = await getSignedUrl(s3, command, { expiresIn: 60 * 5 });
-    const scene = await detectScene(signedUrl, t, minDuration > 2 ? 2 : minDuration);
+    const mp4Params = {
+      Bucket: AWS_BUCKET,
+      Key: `mp4/${req.params.imdbID}/${req.params.filename}`,
+    };
+    command = new GetObjectCommand(mp4Params);
+    const mp4SignedUrl = await getSignedUrl(s3, command, { expiresIn: 60 * 5 });
+    const scene = await detectScene(mp4SignedUrl, t, minDuration > 2 ? 2 : minDuration);
     if (scene === null) {
       return res.status(503).send("Service Unavailable");
     }
-    const video = generateVideoPreview(
+    command = new GetObjectCommand(params);
+    const signedUrl = await getSignedUrl(s3, command, { expiresIn: 60 * 5 });
+    const video = await generateVideoPreview(
       signedUrl,
       scene.start,
       scene.end,
+      `hls/${req.params.imdbID}/${decodeURIComponent(req.params.filename)}`,
       size,
       "mute" in req.query
     );
@@ -164,30 +100,6 @@ export default async (req, res) => {
     res.set("x-video-duration", scene.duration);
     res.set("Access-Control-Expose-Headers", "x-video-start, x-video-end, x-video-duration");
     res.send(video);
-
-    //////////////////////////
-    //       HLS version:   //
-    //////////////////////////
-
-    // // Note: AWS S3 prefix authentication and CORS config
-    // const targetHlsUrl = `${AWS_HLS_URL}/${params.Key}`;
-    // const scene = await detectScene(targetHlsUrl, t, minDuration > 2 ? 2 : minDuration);
-    // if (scene === null) {
-    //   return res.status(500).send("Internal Server Error");
-    // }
-    // const video = generateVideoPreview(
-    //   targetHlsUrl,
-    //   scene.start,
-    //   scene.end,
-    //   size,
-    //   "mute" in req.query
-    // );
-    // res.set("Content-Type", "video/mp4");
-    // res.set("x-video-start", scene.start);
-    // res.set("x-video-end", scene.end);
-    // res.set("x-video-duration", scene.duration);
-    // res.set("Access-Control-Expose-Headers", "x-video-start, x-video-end, x-video-duration");
-    // res.send(video);
   } catch (e) {
     console.log(e);
     res.status(500).send("Internal Server Error");

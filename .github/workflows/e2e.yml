@@ -39,7 +39,6 @@ jobs:
           IP_WHITELIST: ${{ secrets.IP_WHITELIST }}
           AWS_BUCKET: ${{ secrets.AWS_BUCKET }}
           AWS_ENDPOINT_URL: ${{ secrets.AWS_ENDPOINT_URL }}
-          AWS_HLS_URL: ${{ secrets.AWS_HLS_URL }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
           AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
           AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}

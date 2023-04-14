@@ -5,7 +5,6 @@ import child_process from "child_process";
 
 const {
   AWS_ENDPOINT_URL,
-  // AWS_HLS_URL,
   AWS_ACCESS_KEY,
   AWS_SECRET_KEY,
   AWS_BUCKET,
@@ -105,30 +104,12 @@ export default async (req, res) => {
     return res.status(400).send("Bad Request. Invalid param: size");
   }
   try {
-    ///////////////////////////
-    //      mp4 version:     //
-    // (Note: now handing hls//
-    // files because of the  //
-    // param 'hls' key above //
-    // and it works.) :)     //
-    ///////////////////////////
-
     command = new GetObjectCommand(params);
     const signedUrl = await getSignedUrl(s3, command, { expiresIn: 60 * 5 });
 
     const image = generateImagePreview(signedUrl, t, size);
     res.set("Content-Type", "image/jpg");
     res.send(image);
-
-    //////////////////////////
-    //      HLS version:    //
-    //////////////////////////
-
-    // // Note: AWS S3 prefix authentication and CORS config
-    // const targetHlsUrl = `${AWS_HLS_URL}/${params.Key}`;
-    // const image = generateImagePreview(targetHlsUrl, t, size);
-    // res.set("Content-Type", "image/jpg");
-    // res.send(image);
   } catch (e) {
     console.log(e);
     res.status(500).send("Internal Server Error");

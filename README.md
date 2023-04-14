@@ -3,8 +3,9 @@
 [![License](https://img.shields.io/github/license/shotit/shotit-media.svg?style=flat-square)](https://github.com/shotit/shotit-media/blob/main/LICENSE)
 [![Coverage](https://img.shields.io/codecov/c/github/shotit/shotit-media/main.svg?style=flat)](https://app.codecov.io/gh/shotit/shotit-media/branch/main)
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/shotit/shotit-media/docker-image.yml?branch=main&style=flat-square)](https://github.com/shotit/shotit-media/actions)
+[![GitHub release](https://img.shields.io/github/release/shotit/shotit-media.svg)](https://github.com/shotit/shotit-media/releases/latest)
 [![Docker](https://img.shields.io/docker/pulls/lesliewong007/shotit-media?style=flat-square)](https://hub.docker.com/r/lesliewong007/shotit-media)
-[![Docker Image Size](https://img.shields.io/docker/image-size/lesliewong007/shotit-media/latest?style=flat-square)](https://hub.docker.com/r/lesliewong007/shotit-media)
+[![Docker Image Size](https://img.shields.io/docker/image-size/lesliewong007/shotit-media/v0.9.1?style=flat-square)](https://hub.docker.com/r/lesliewong007/shotit-media)
 
 ### Media broker for serving video preview for shotit
 

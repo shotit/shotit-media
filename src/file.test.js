@@ -137,7 +137,7 @@ test(
     const filename = "Big Buck Bunny.mp4";
     const fileBuffer = fs.createReadStream(videoFilePath);
     // // AbortController was added in node v14.17.0 globally
-    const AbortController = globalThis.AbortController || (await import("abort-controller"));
+    const AbortController = globalThis.AbortController;
     const controller = new AbortController();
     const timeout = setTimeout(() => {
       controller.abort();

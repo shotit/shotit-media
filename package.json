@@ -14,7 +14,7 @@
     "format": "prettier --write \"**/*.js\"",
     "lint": "prettier --check \"**/*.js\"",
     "test": "prettier --check \"**/*.js\"",
-    "jest": "cross-env NODE_NO_WARNINGS=1 NODE_OPTIONS=--experimental-vm-modules jest --runInBand"
+    "jest": "cross-env NODE_NO_WARNINGS=1 NODE_OPTIONS=--experimental-vm-modules jest --coverage --runInBand"
   },
   "repository": {
     "type": "git",

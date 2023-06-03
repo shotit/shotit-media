@@ -27,14 +27,10 @@ let command;
 
 export default async (filePath, start, end, key, size = "m", mute = false) => {
   let targetPath = "";
+  const tempPath = path.join(os.tmpdir(), crypto.createHash("md5").update(filePath).digest("hex"));
+  fs.ensureDirSync(tempPath);
   // Remote S3 HLS
   if (filePath.endsWith("index.m3u8")) {
-    const tempPath = path.join(
-      os.tmpdir(),
-      crypto.createHash("md5").update(filePath).digest("hex")
-    );
-    fs.ensureDirSync(tempPath);
-
     const tempIndexPath = path.join(tempPath, "index.m3u8");
 
     const response = await fetch(filePath);

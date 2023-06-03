@@ -53,6 +53,7 @@ export default async (req, res) => {
   }
 
   console.log({ reqParams });
+  console.log({ params });
   try {
     command = new ListObjectsCommand(params);
     const response = await s3.send(command);

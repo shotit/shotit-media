@@ -88,9 +88,7 @@ export default async (req, res) => {
   const params = {
     Bucket: AWS_BUCKET,
     // Key: `${req.params.imdbID}/${req.params.filename.replace(/\.jpg$/, "")}`,
-    Key: `hls/${req.params.imdbID}/${decodeURIComponent(
-      req.params.filename.replace(/\.jpg$/, "")
-    )}/index.m3u8`,
+    Key: `hls/${req.params.imdbID}/${req.params.filename.replace(/\.jpg$/, "")}/index.m3u8`,
   };
   try {
     command = new HeadObjectCommand(params);

@@ -49,7 +49,7 @@ export default async (req, res) => {
   if (reqParams.imdbID) {
     params.Prefix += sanitize(reqParams.imdbID);
     if (reqParams.filename) {
-      params.Prefix += "/" + decodeURIComponent(sanitize(reqParams.filename));
+      params.Prefix += "/" + sanitize(reqParams.filename);
     }
   }
 

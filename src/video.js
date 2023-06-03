@@ -59,7 +59,7 @@ export default async (req, res) => {
   const params = {
     Bucket: AWS_BUCKET,
     // Key: `${req.params.imdbID}/${req.params.filename}`,
-    Key: `hls/${req.params.imdbID}/${decodeURIComponent(req.params.filename)}/index.m3u8`,
+    Key: `hls/${req.params.imdbID}/${req.params.filename}/index.m3u8`,
   };
   try {
     command = new HeadObjectCommand(params);
@@ -90,7 +90,7 @@ export default async (req, res) => {
       signedUrl,
       scene.start,
       scene.end,
-      `hls/${req.params.imdbID}/${decodeURIComponent(req.params.filename)}`,
+      `hls/${req.params.imdbID}/${req.params.filename}`,
       size,
       "mute" in req.query
     );

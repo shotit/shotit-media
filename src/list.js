@@ -1,5 +1,4 @@
 import { S3Client, ListObjectsCommand } from "@aws-sdk/client-s3";
-import sanitize from "sanitize-filename";
 
 const { AWS_ENDPOINT_URL, AWS_ACCESS_KEY, AWS_SECRET_KEY, AWS_BUCKET, AWS_REGION } = process.env;
 
@@ -47,9 +46,9 @@ export default async (req, res) => {
     }, {});
 
   if (reqParams.imdbID) {
-    params.Prefix += sanitize(reqParams.imdbID);
+    params.Prefix += reqParams.imdbID;
     if (reqParams.filename) {
-      params.Prefix += "/" + decodeURIComponent(sanitize(reqParams.filename));
+      params.Prefix += "/" + decodeURIComponent(reqParams.filename);
     }
   }
 

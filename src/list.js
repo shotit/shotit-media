@@ -48,12 +48,10 @@ export default async (req, res) => {
   if (reqParams.imdbID) {
     params.Prefix += reqParams.imdbID;
     if (reqParams.filename) {
-      params.Prefix += "/" + reqParams.filename;
+      params.Prefix += "/" + decodeURIComponent(reqParams.filename);
     }
   }
 
-  console.log({ reqParams });
-  console.log({ params });
   try {
     command = new ListObjectsCommand(params);
     const response = await s3.send(command);

@@ -26,62 +26,70 @@ const s3 = new S3Client(opts);
 let command;
 
 export default async (filePath, start, end, key, size = "m", mute = false) => {
+  let targetPath = "";
   const tempPath = path.join(os.tmpdir(), crypto.createHash("md5").update(filePath).digest("hex"));
   fs.ensureDirSync(tempPath);
+  // Remote S3 HLS
+  if (filePath.includes("index.m3u8")) {
+    const tempIndexPath = path.join(tempPath, "index.m3u8");
 
-  const tempIndexPath = path.join(tempPath, "index.m3u8");
-
-  const response = await fetch(filePath);
-  const downloadNecessaryHLS = (res, path) => {
-    return new Promise((resolve) => {
-      res.body.pipe(fs.createWriteStream(path));
-      res.body.on("end", async () => {
-        console.log(`Fetched ${path}`);
-        const cont = await fs.readFile(path, { encoding: "utf8" });
-        const lines = cont.split("\n");
-        let tsList = [];
-        lines.reduce((acc, curV, curI) => {
-          let re = /^#EXTINF:(?<num>\d+\.?\d*),/;
-          let match = re.exec(curV);
-          let sum = acc;
-          if (match) {
-            const {
-              groups: { num },
-            } = match;
-            sum = acc + Number(num);
-            if (start >= acc && start <= sum) {
-              // allow over edge
-              tsList.push(`10s_${(curI - 2 + "").padStart(3, "0")}.ts`);
-              tsList.push(`10s_${(curI - 1 + "").padStart(3, "0")}.ts`);
-              tsList.push(`10s_${(curI + "").padStart(3, "0")}.ts`);
-              tsList.push(`10s_${(curI + 1 + "").padStart(3, "0")}.ts`);
-              tsList.push(`10s_${(curI + 2 + "").padStart(3, "0")}.ts`);
+    const response = await fetch(filePath);
+    const downloadNecessaryHLS = (res, path) => {
+      return new Promise((resolve) => {
+        res.body.pipe(fs.createWriteStream(path));
+        res.body.on("end", async () => {
+          console.log(`Fetched ${path}`);
+          const cont = await fs.readFile(path, { encoding: "utf8" });
+          const lines = cont.split("\n");
+          let tsList = [];
+          lines.reduce((acc, curV, curI) => {
+            let re = /^#EXTINF:(?<num>\d+\.?\d*),/;
+            let match = re.exec(curV);
+            let sum = acc;
+            if (match) {
+              const {
+                groups: { num },
+              } = match;
+              sum = acc + Number(num);
+              if (start >= acc && start <= sum) {
+                // allow over edge
+                tsList.push(`10s_${(curI - 2 + "").padStart(3, "0")}.ts`);
+                tsList.push(`10s_${(curI - 1 + "").padStart(3, "0")}.ts`);
+                tsList.push(`10s_${(curI + "").padStart(3, "0")}.ts`);
+                tsList.push(`10s_${(curI + 1 + "").padStart(3, "0")}.ts`);
+                tsList.push(`10s_${(curI + 2 + "").padStart(3, "0")}.ts`);
+              }
+            }
+            return sum;
+          }, 0);
+          let signedUrl = "";
+          let params;
+          for (const ts of tsList) {
+            try {
+              params = {
+                Bucket: AWS_BUCKET,
+                Key: `${key}/${ts}`,
+              };
+              command = new GetObjectCommand(params);
+              signedUrl = await getSignedUrl(s3, command, { expiresIn: 60 * 5 });
+              const tsResponse = await fetch(signedUrl);
+              fs.writeFileSync(path.join(tempPath, ts), tsResponse);
+            } catch (error) {
+              console.log(error);
             }
           }
-          return sum;
-        }, 0);
-        let signedUrl = "";
-        let params;
-        for (const ts of tsList) {
-          try {
-            params = {
-              Bucket: AWS_BUCKET,
-              Key: `${key}/${ts}`,
-            };
-            command = new GetObjectCommand(params);
-            signedUrl = await getSignedUrl(s3, command, { expiresIn: 60 * 5 });
-            const tsResponse = await fetch(signedUrl);
-            fs.writeFileSync(path.join(tempPath, ts), tsResponse);
-          } catch (error) {
-            console.log(error);
-          }
-        }
-        await resolve("ok");
+          await resolve("ok");
+        });
       });
-    });
-  };
+    };
 
-  await downloadNecessaryHLS(response, tempIndexPath);
+    await downloadNecessaryHLS(response, tempIndexPath);
+
+    targetPath = tempIndexPath;
+  } else {
+    // Local Minio MP4
+    targetPath = filePath;
+  }
 
   const ffmpeg = child_process.spawnSync(
     "ffmpeg",
@@ -96,7 +104,7 @@ export default async (filePath, start, end, key, size = "m", mute = false) => {
       "-ss",
       start - 10,
       "-i",
-      tempIndexPath,
+      targetPath,
       "-ss",
       "10",
       "-t",

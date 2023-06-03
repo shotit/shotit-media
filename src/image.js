@@ -87,8 +87,11 @@ export default async (req, res) => {
 
   const params = {
     Bucket: AWS_BUCKET,
-    // Key: `${req.params.imdbID}/${req.params.filename.replace(/\.jpg$/, "")}`,
-    Key: `hls/${req.params.imdbID}/${req.params.filename.replace(/\.jpg$/, "")}/index.m3u8`,
+    Key: AWS_ENDPOINT_URL.startsWith("http://minio")
+      ? // Local Minio, directly mp4 files
+        `mp4/${req.params.imdbID}/${req.params.filename.replace(/\.jpg$/, "")}`
+      : // Remote S3, fetch hls files to reduce network IO
+        `hls/${req.params.imdbID}/${req.params.filename.replace(/\.jpg$/, "")}/index.m3u8`,
   };
   try {
     command = new HeadObjectCommand(params);

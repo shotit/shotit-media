@@ -1,6 +1,6 @@
 {
   "name": "shotit-media",
-  "version": "0.9.3",
+  "version": "0.9.4",
   "description": "Media broker for shotit",
   "main": "server.js",
   "type": "module",

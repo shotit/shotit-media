@@ -3,7 +3,7 @@ version: "3.5"
 services:
   media:
     container_name: shotit-media
-    image: ghcr.io/shotit/shotit-media:v0.9.5
+    image: ghcr.io/shotit/shotit-media:v0.9.6
     restart: unless-stopped
     environment:
       - TRACE_MEDIA_SALT=${TRACE_MEDIA_SALT}
@@ -23,7 +23,6 @@ services:
         target: /mnt/
     networks:
       shotit_net:
-
 
   minio:
     container_name: shotit-minio
@@ -48,19 +47,12 @@ services:
     depends_on:
       - "etcd"
     healthcheck:
-      test:
-        [
-          "CMD",
-          "curl",
-          "-f",
-          "http://localhost:9000/minio/health/live"
-        ]
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
       interval: 30s
       timeout: 20s
       retries: 3
     networks:
       shotit_net:
-
 
   etcd:
     container_name: shotit-etcd
@@ -78,7 +70,6 @@ services:
       - "2379:2379"
     networks:
       shotit_net:
-
 
 networks:
   shotit_net:

@@ -38,6 +38,9 @@ export default async (filePath, t, minDuration) => {
     "ffmpeg",
     [
       "-headers",
+      // If you are using remote S3, for good practice,
+      // then the hls folder of your S3 service should be public
+      // and require requests with a Referer header "https://shotit.github.io/"
       "Referer: https://shotit.github.io/",
       "-y",
       "-ss",

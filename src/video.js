@@ -77,11 +77,7 @@ export default async (req, res) => {
   }
   const minDuration = Number(req.query.minDuration) || 0.25;
   try {
-    const mp4Params = {
-      Bucket: AWS_BUCKET,
-      Key: `mp4/${req.params.imdbID}/${req.params.filename}`,
-    };
-    command = new GetObjectCommand(mp4Params);
+    command = new GetObjectCommand(params);
     const mp4SignedUrl = await getSignedUrl(s3, command, { expiresIn: 60 * 5 });
     const scene = await detectScene(mp4SignedUrl, t, minDuration > 2 ? 2 : minDuration);
     if (scene === null) {

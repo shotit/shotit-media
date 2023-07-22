@@ -34,12 +34,12 @@ export default async (filePath, start, end, key, size = "m", mute = false) => {
     const tempIndexPath = path.join(tempPath, "index.m3u8");
 
     const response = await fetch(filePath);
-    const downloadNecessaryHLS = (res, path) => {
+    const downloadNecessaryHLS = (res, indexPath) => {
       return new Promise((resolve) => {
-        res.body.pipe(fs.createWriteStream(path));
+        res.body.pipe(fs.createWriteStream(indexPath));
         res.body.on("end", async () => {
-          console.log(`Fetched ${path}`);
-          const cont = await fs.readFile(path, { encoding: "utf8" });
+          console.log(`Fetched ${indexPath}`);
+          const cont = await fs.readFile(indexPath, { encoding: "utf8" });
           const lines = cont.split("\n");
           let tsList = [];
           lines.reduce((acc, curV, curI) => {

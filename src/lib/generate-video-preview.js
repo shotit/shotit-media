@@ -73,7 +73,8 @@ export default async (filePath, start, end, key, size = "m", mute = false) => {
               command = new GetObjectCommand(params);
               signedUrl = await getSignedUrl(s3, command, { expiresIn: 60 * 5 });
               const tsResponse = await fetch(signedUrl);
-              fs.writeFileSync(path.join(tempPath, ts), tsResponse);
+              const tsArrayBuffer = await tsResponse.arrayBuffer();
+              fs.writeFileSync(path.join(tempPath, ts), Buffer.from(tsArrayBuffer));
             } catch (error) {
               console.log(error);
             }
@@ -152,6 +153,6 @@ export default async (filePath, start, end, key, size = "m", mute = false) => {
   if (ffmpeg.stderr.length) {
     console.log(ffmpeg.stderr.toString());
   }
-  fs.rmdirSync(tempPath, { recursive: true, force: true });
+  fs.rmSync(tempPath, { recursive: true, force: true });
   return ffmpeg.stdout;
 };

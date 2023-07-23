@@ -152,6 +152,6 @@ export default async (filePath, start, end, key, size = "m", mute = false) => {
   if (ffmpeg.stderr.length) {
     console.log(ffmpeg.stderr.toString());
   }
-  fs.rmdirSync(tempPath, { recursive: true, force: true });
+  fs.rmSync(tempPath, { recursive: true, force: true });
   return ffmpeg.stdout;
 };

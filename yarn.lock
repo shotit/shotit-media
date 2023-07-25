@@ -353,10 +353,10 @@
     "@smithy/hash-stream-node" "^1.0.1"
     tslib "^2.5.0"
 
-"@aws-sdk/lib-storage@3.374.0":
-  version "3.374.0"
-  resolved "https://registry.yarnpkg.com/@aws-sdk/lib-storage/-/lib-storage-3.374.0.tgz#6a4b9d36f07b098e264148071bc2147e4e0e91a8"
-  integrity sha512-62xI6CxhwbIrO8s/t+AfPzekhoR8DSkY1qpR5AWDN2mIRVcAidkrvLdPLEGSG0knyBr+CH6qNLBuLEBkqAfRlw==
+"@aws-sdk/lib-storage@3.377.0":
+  version "3.377.0"
+  resolved "https://registry.yarnpkg.com/@aws-sdk/lib-storage/-/lib-storage-3.377.0.tgz#92c07a77499f6f87f2209ff760d886f68203becb"
+  integrity sha512-9XdHonAbs1UUr4zeVE7fgLF1vLwvG7kIUUTZTiQVYaX+egyA0lAciRdfTx/OYA/y3MkeoKjn/0tIfGIL3wXZWQ==
   dependencies:
     "@smithy/abort-controller" "^1.0.1"
     "@smithy/middleware-endpoint" "^1.0.2"

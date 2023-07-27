@@ -3,6 +3,8 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import crypto from "crypto";
 import child_process from "child_process";
 
+import detectScene from "./lib/detect-scene.js";
+
 const {
   AWS_ENDPOINT_URL,
   AWS_ACCESS_KEY,
@@ -107,12 +109,18 @@ export default async (req, res) => {
   if (!["l", "m", "s"].includes(size)) {
     return res.status(400).send("Bad Request. Invalid param: size");
   }
+  const minDuration = Number(req.query.minDuration) || 0.25;
   try {
     command = new GetObjectCommand(params);
     const signedUrl = await getSignedUrl(s3, command, { expiresIn: 60 * 5 });
-
+    const scene = await detectScene(signedUrl, t, minDuration > 2 ? 2 : minDuration);
+    if (scene === null) {
+      return res.status(503).send("Service Unavailable");
+    }
     const image = generateImagePreview(signedUrl, t, size);
     res.set("Content-Type", "image/jpg");
+    res.set("x-video-duration", scene.duration);
+    res.set("Access-Control-Expose-Headers", "x-video-duration");
     res.send(image);
   } catch (e) {
     console.log(e);

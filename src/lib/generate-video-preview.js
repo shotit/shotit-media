@@ -41,7 +41,7 @@ export default async (filePath, start, end, key, size = "m", mute = false) => {
           console.log(`Fetched ${indexPath}`);
           const cont = await fs.readFile(indexPath, { encoding: "utf8" });
           const lines = cont.split("\n");
-          //Issue #1, prevent hls Error when loading first segment
+          //Issue #186, prevent hls Error when loading first segment
           let tsList = ["10s_000.ts"];
           lines.reduce((acc, curV, curI) => {
             let re = /^#EXTINF:(?<num>\d+\.?\d*),/;

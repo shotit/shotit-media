@@ -78,13 +78,11 @@ export default async (req, res) => {
   const minDuration = Number(req.query.minDuration) || 0.25;
   try {
     command = new GetObjectCommand(params);
-    const mp4SignedUrl = await getSignedUrl(s3, command, { expiresIn: 60 * 5 });
-    const scene = await detectScene(mp4SignedUrl, t, minDuration > 2 ? 2 : minDuration);
+    const signedUrl = await getSignedUrl(s3, command, { expiresIn: 60 * 5 });
+    const scene = await detectScene(signedUrl, t, minDuration > 2 ? 2 : minDuration);
     if (scene === null) {
       return res.status(503).send("Service Unavailable");
     }
-    command = new GetObjectCommand(params);
-    const signedUrl = await getSignedUrl(s3, command, { expiresIn: 60 * 5 });
     const video = await generateVideoPreview(
       signedUrl,
       scene.start,

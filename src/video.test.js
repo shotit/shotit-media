@@ -29,6 +29,7 @@ test(
     );
     expect(response.statusCode).toBe(200);
     expect(response.headers["content-type"]).toMatch(/^video\/mp4/);
+    expect(response.headers["x-video-duration"]).toBe("596.500001");
   },
   60 * 1000
 );

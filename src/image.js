@@ -109,6 +109,7 @@ export default async (req, res) => {
   if (!["l", "m", "s"].includes(size)) {
     return res.status(400).send("Bad Request. Invalid param: size");
   }
+  const minDuration = Number(req.query.minDuration) || 0.25;
   try {
     command = new GetObjectCommand(params);
     const signedUrl = await getSignedUrl(s3, command, { expiresIn: 60 * 5 });

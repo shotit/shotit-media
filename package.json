@@ -29,7 +29,7 @@
   "homepage": "https://github.com/shotit/shotit-media#readme",
   "dependencies": {
     "@aws-sdk/client-s3": "3.374.0",
-    "@aws-sdk/lib-storage": "3.374.0",
+    "@aws-sdk/lib-storage": "3.417.0",
     "@aws-sdk/s3-request-presigner": "3.374.0",
     "canvas": "^2.11.2",
     "dotenv": "^16.3.1",

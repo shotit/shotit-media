@@ -31,7 +31,7 @@ beforeAll(() => {
 
     // Remove the socket when it closes
     socket.on("close", function () {
-      console.log("socket", socketId, "closed");
+      // console.log("socket", socketId, "closed");
       delete sockets[socketId];
     });
 

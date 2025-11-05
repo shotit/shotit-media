@@ -188,6 +188,9 @@ afterAll(() => {
   fs.removeSync(tempPath);
   // Close the server
   server.close(function () {});
+  setImmediate(function () {
+    server.emit("close");
+  }); // https://stackoverflow.com/a/36830072/8808175
   // Destroy all open sockets
   for (var socketId in sockets) {
     sockets[socketId].destroy();

@@ -100,64 +100,68 @@ export default async (req, res) => {
       await parallelUploads3.done();
       console.log(`Uploaded(mp4) to ${videoFilePath}`);
 
-      // Need to fetch the mp4 file back to convert it to hls files in docker volume,
-      // then upload
-      console.log(
-        `Uploading to ${path.join(
-          VIDEO_PATH,
-          "hls",
-          sanitize(req.params.imdbID),
-          sanitize(req.params.filename)
-        )}`
-      );
+      // Only hls process when remote S3
+      !AWS_ENDPOINT_URL.startsWith("http://minio") &&
+        (async () => {
+          // Need to fetch the mp4 file back to convert it to hls files in docker volume,
+          // then upload
+          console.log(
+            `Uploading to ${path.join(
+              VIDEO_PATH,
+              "hls",
+              sanitize(req.params.imdbID),
+              sanitize(req.params.filename)
+            )}`
+          );
 
-      command = new GetObjectCommand(params);
-      const signedUrl = await getSignedUrl(s3, command, { expiresIn: 60 * 5 });
+          command = new GetObjectCommand(params);
+          const signedUrl = await getSignedUrl(s3, command, { expiresIn: 60 * 5 });
 
-      const hlsDir = mp4ToHls(
-        signedUrl,
-        path.join(VIDEO_PATH, "hls"),
-        sanitize(req.params.imdbID),
-        sanitize(req.params.filename)
-      );
+          const hlsDir = mp4ToHls(
+            signedUrl,
+            path.join(VIDEO_PATH, "hls"),
+            sanitize(req.params.imdbID),
+            sanitize(req.params.filename)
+          );
 
-      const files = fs.readdirSync(hlsDir);
+          const files = fs.readdirSync(hlsDir);
 
-      for (const file of files) {
-        try {
-          const fileBuffer = fs.createReadStream(path.join(hlsDir, file));
-          const passThroughStream = new stream.PassThrough();
+          for (const file of files) {
+            try {
+              const fileBuffer = fs.createReadStream(path.join(hlsDir, file));
+              const passThroughStream = new stream.PassThrough();
 
-          const fileUploadParams = Object.assign(params, {
-            Key: `hls/${sanitize(req.params.imdbID)}/${sanitize(req.params.filename)}/${sanitize(
-              file
-            )}`,
-            Body: passThroughStream,
-          });
+              const fileUploadParams = Object.assign(params, {
+                Key: `hls/${sanitize(req.params.imdbID)}/${sanitize(
+                  req.params.filename
+                )}/${sanitize(file)}`,
+                Body: passThroughStream,
+              });
 
-          const parallelUploads3 = new Upload({
-            client: s3,
-            // tags: [...], // optional tags
-            queueSize: 4, // optional concurrency configuration
-            leavePartsOnError: false, // optional manually handle dropped parts
-            params: fileUploadParams,
-          });
+              const parallelUploads3 = new Upload({
+                client: s3,
+                // tags: [...], // optional tags
+                queueSize: 4, // optional concurrency configuration
+                leavePartsOnError: false, // optional manually handle dropped parts
+                params: fileUploadParams,
+              });
 
-          fileBuffer.pipe(passThroughStream);
+              fileBuffer.pipe(passThroughStream);
 
-          parallelUploads3.on("httpUploadProgress", (progress) => {
-            console.log(progress);
-          });
+              parallelUploads3.on("httpUploadProgress", (progress) => {
+                console.log(progress);
+              });
 
-          await parallelUploads3.done();
-        } catch (e) {
-          error500(e, res);
-        }
-      }
+              await parallelUploads3.done();
 
-      console.log(`Uploaded(hls) to ${videoFilePath}`);
+              console.log(`Uploaded(hls) to ${videoFilePath}`);
 
-      fs.rmSync(hlsDir, { recursive: true, force: true });
+              fs.rmSync(hlsDir, { recursive: true, force: true });
+            } catch (e) {
+              error500(e, res);
+            }
+          }
+        })();
 
       res.status(204).send("Uploaded");
     } catch (e) {

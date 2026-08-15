@@ -5,7 +5,7 @@
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/shotit/shotit-media/docker-image.yml?branch=main&style=flat-square)](https://github.com/shotit/shotit-media/actions)
 [![GitHub release](https://img.shields.io/github/release/shotit/shotit-media.svg)](https://github.com/shotit/shotit-media/releases/latest)
 [![Docker](https://img.shields.io/docker/pulls/shotit/shotit-media?style=flat-square)](https://hub.docker.com/r/shotit/shotit-media)
-[![Docker Image Size](https://img.shields.io/docker/image-size/shotit/shotit-media/v0.9.16?style=flat-square)](https://hub.docker.com/r/shotit/shotit-media)
+[![Docker Image Size](https://img.shields.io/docker/image-size/shotit/shotit-media/v0.9.17?style=flat-square)](https://hub.docker.com/r/shotit/shotit-media)
 
 ### Media broker for serving video preview for [shotit](https://github.com/shotit/shotit)
 
